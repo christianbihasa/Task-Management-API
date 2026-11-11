@@ -21,6 +21,27 @@ export function createApp() {
 
   const api = express.Router();
 
+  // Opening /api/v1 in a browser shows what the API offers.
+  api.get('/', (_req, res) => {
+    sendSuccess(res, {
+      name: 'Task Management API',
+      version: 'v1',
+      docs: 'See README.md, or open api.http in VS Code with the REST Client extension',
+      endpoints: [
+        'GET    /api/v1/health',
+        'POST   /api/v1/auth/register',
+        'POST   /api/v1/auth/login',
+        'GET    /api/v1/auth/me        (requires token)',
+        'GET    /api/v1/tasks          (requires token)',
+        'POST   /api/v1/tasks          (requires token)',
+        'GET    /api/v1/tasks/:id      (requires token)',
+        'PUT    /api/v1/tasks/:id      (requires token)',
+        'PATCH  /api/v1/tasks/:id      (requires token)',
+        'DELETE /api/v1/tasks/:id      (requires token)',
+      ],
+    });
+  });
+
   api.get('/health', async (_req, res) => {
     try {
       await query('SELECT 1');

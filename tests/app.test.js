@@ -2,6 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { api, registerUser } from './helpers.js';
 
 describe('general API behaviour', () => {
+  it('GET /api/v1 lists the available endpoints', async () => {
+    const res = await api().get('/api/v1').expect(200);
+    expect(res.body.data.name).toBe('Task Management API');
+    expect(res.body.data.endpoints).toContain('POST   /api/v1/auth/login');
+  });
+
   it('GET /api/v1/health reports the database as connected', async () => {
     const res = await api().get('/api/v1/health').expect(200);
     expect(res.body.data).toMatchObject({ status: 'ok', database: 'connected' });
