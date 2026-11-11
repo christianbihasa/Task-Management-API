@@ -1,0 +1,114 @@
+# Try the API from inside VS Code.
+#
+# 1. Install the "REST Client" extension (by Huachao Mao).
+# 2. Start the server: npm run dev
+# 3. Click "Send Request" above any request below.
+#
+# Run them top to bottom the first time: "Log in" saves your token and
+# "Create a task" saves the task id, so the requests after them work automatically.
+# Note: register/login are limited to 10 requests per 15 minutes.
+
+@baseUrl = http://localhost:3000/api/v1
+
+# Filled in from the responses of the "login" and "createTask" requests below.
+# (These must live up here: lines under a request count as part of its body.)
+@token = {{login.response.body.$.data.token}}
+@taskId = {{createTask.response.body.$.data.id}}
+
+### API overview
+GET {{baseUrl}}
+
+### Health check
+GET {{baseUrl}}/health
+
+### Register a new account (change the email if it's already taken)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Ada Lovelace",
+  "email": "lovelace@example.com",
+  "password": "Password123"
+}
+
+### Log in (saves the token for the requests below)
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "lovelace@example.com",
+  "password": "Password123"
+}
+
+### Who am I?
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{token}}
+
+### Create a task (saves its id for the requests below)
+# @name createTask
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Write the project README",
+  "description": "Cover setup, endpoints and examples",
+  "priority": "high",
+  "dueDate": "2026-12-31T17:00:00+08:00"
+}
+
+### List my tasks
+GET {{baseUrl}}/tasks
+Authorization: Bearer {{token}}
+
+### List with filters, search and sorting
+GET {{baseUrl}}/tasks?status=todo&priority=high&search=readme&sortBy=dueDate&order=asc&page=1&limit=5
+Authorization: Bearer {{token}}
+
+### Get one task
+GET {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{token}}
+
+### Update some fields (PATCH)
+PATCH {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "in_progress"
+}
+
+### Replace the whole task (PUT): fields you leave out go back to their defaults
+PUT {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Write and publish the README",
+  "status": "done",
+  "priority": "medium"
+}
+
+### Delete the task
+DELETE {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{token}}
+
+### --- Error examples ---
+
+### Validation error (empty title, bad status)
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "",
+  "status": "finished"
+}
+
+### No token
+GET {{baseUrl}}/tasks
+
+### Malformed task id
+GET {{baseUrl}}/tasks/not-a-uuid
+Authorization: Bearer {{token}}
