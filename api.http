@@ -10,6 +10,11 @@
 
 @baseUrl = http://localhost:3000/api/v1
 
+# Filled in from the responses of the "login" and "createTask" requests below.
+# (These must live up here: lines under a request count as part of its body.)
+@token = {{login.response.body.$.data.token}}
+@taskId = {{createTask.response.body.$.data.id}}
+
 ### API overview
 GET {{baseUrl}}
 
@@ -22,7 +27,7 @@ Content-Type: application/json
 
 {
   "name": "Ada Lovelace",
-  "email": "ada@example.com",
+  "email": "lovelace@example.com",
   "password": "Password123"
 }
 
@@ -32,11 +37,9 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "ada@example.com",
+  "email": "lovelace@example.com",
   "password": "Password123"
 }
-
-@token = {{login.response.body.data.token}}
 
 ### Who am I?
 GET {{baseUrl}}/auth/me
@@ -54,8 +57,6 @@ Content-Type: application/json
   "priority": "high",
   "dueDate": "2026-12-31T17:00:00+08:00"
 }
-
-@taskId = {{createTask.response.body.data.id}}
 
 ### List my tasks
 GET {{baseUrl}}/tasks
